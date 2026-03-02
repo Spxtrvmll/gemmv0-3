@@ -1,4 +1,4 @@
-#include "gemm_v3.h"
+#include <immintrin.h>
 
 void micro_6x16(int K, const float * A, int lda, int step, 
     const float * B, int ldb, float * C, int ldc)
@@ -63,23 +63,4 @@ void micro_6x16(int K, const float * A, int lda, int step,
     C += ldc;
     _mm256_storeu_ps(C + 0, _mm256_add_ps(c50, _mm256_loadu_ps(C + 0)));
     _mm256_storeu_ps(C + 8, _mm256_add_ps(c51, _mm256_loadu_ps(C + 8)));
-}
-
-void init_c(int M, int N, float * C, int ldc)
-{
-    for (int i = 0; i < M; ++i, C += ldc)
-        for (int j = 0; j < N; j += 8)
-            _mm256_storeu_ps(C + j, _mm256_setzero_ps());
-}
-
-void gemm_v3(int M, int N, int K, const float * A, const float * B, float * C)
-{
-    for (int i = 0; i < M; i += 6)
-    {
-        for (int j = 0; j < N; j += 16)
-        {
-            init_c(6, 16, C + i*N + j, N);
-            micro_6x16(K, A + i*K, K, 1, B + j, N, C + i*N + j, N);
-        }
-    }
 }

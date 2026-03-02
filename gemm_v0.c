@@ -1,5 +1,3 @@
-#include "gemm_v0.h"
-
 void gemm_v0(int M, int N, int K, const float * A, const float * B, float *C)
 {
     for (int i = 0; i < M; ++i)
